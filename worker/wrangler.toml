@@ -1,0 +1,11 @@
+name = "apk-tracker-worker"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["0 */6 * * *"]
+
+[[kv_namespaces]]
+binding = "APK_KV"
+id = "ea4c7755ac624c9b8e896523489317b4"
+preview_id = "b48b2160af954b27b9250863fbbad900"

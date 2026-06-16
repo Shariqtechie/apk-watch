@@ -1,0 +1,15 @@
+{
+  "name": "apk-tracker-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "kv:create": "wrangler kv:namespace create APK_KV",
+    "kv:create:preview": "wrangler kv:namespace create APK_KV --preview"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
