@@ -72,8 +72,8 @@ apk-watch/
 
 ## 🚀 Quick Start
 
-- **Backend setup** → [`worker/SETUP.md`](./worker/SETUP.md)
-- **Frontend setup** → [`frontend/SETUP.md`](./frontend/SETUP.md)
+- **Backend setup** → [`worker/SETUP.md`](./worker/worker-SETUP.md)
+- **Frontend setup** → [`frontend/SETUP.md`](./frontend/frontend-SETUP.md)
 
 ---
 
