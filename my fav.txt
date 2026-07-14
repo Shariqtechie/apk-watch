@@ -30,7 +30,7 @@
 
 <https://github.com/termux/termux-app>
 
-<https://gitlab.com/juanitobananas/scrambled-exif/tree/HEAD>
+<https://gitlab.com/juanitobananas/scrambled-exif>
 
 <https://github.com/localsend/localsend>
 
