@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>APK Watch</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0f0f13;
+  --bg2: #16161d;
+  --bg3: #1e1e28;
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.08);
+  --glass-hover: rgba(255,255,255,0.09);
+  --text: #f0f0f5;
+  --text2: #9090a8;
+  --text3: #5a5a72;
+  --accent: #7c6ff7;
+  --accent2: #5b53e0;
+  --accent-glow: rgba(124,111,247,0.12);
+  --green: #34d399;
+  --green-bg: rgba(52,211,153,0.1);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,0.1);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.1);
+  --blue: #60a5fa;
+  --blue-bg: rgba(96,165,250,0.1);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --bg: #f0f0f8;
+  --bg2: #ffffff;
+  --bg3: #e8e8f2;
+  --glass: rgba(255,255,255,0.7);
+  --glass-border: rgba(0,0,0,0.08);
+  --glass-hover: rgba(255,255,255,0.95);
+  --text: #1a1a2e;
+  --text2: #5a5a7a;
+  --text3: #9090aa;
+  --accent: #6c5ff5;
+  --accent2: #5048d0;
+  --accent-glow: rgba(108,95,245,0.08);
+  --green: #059669;
+  --green-bg: rgba(5,150,105,0.08);
+  --amber: #d97706;
+  --amber-bg: rgba(217,119,6,0.08);
+  --red: #dc2626;
+  --red-bg: rgba(220,38,38,0.08);
+  --blue: #2563eb;
+  --blue-bg: rgba(37,99,235,0.08);
+  --shadow: 0 8px 32px rgba(0,0,0,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background 0.3s,color 0.3s}
+
+.blobs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.12}
+.blob1{width:500px;height:500px;background:#7c6ff7;top:-100px;left:-100px}
+.blob2{width:400px;height:400px;background:#34d399;bottom:-80px;right:-80px}
+.blob3{width:300px;height:300px;background:#60a5fa;top:50%;left:50%;transform:translate(-50%,-50%)}
+[data-theme="light"] .blob{opacity:0.05}
+
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px}
+
+.topbar{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);background:rgba(15,15,19,0.85);border-bottom:1px solid var(--glass-border);transition:background 0.3s}
+[data-theme="light"] .topbar{background:rgba(240,240,248,0.88)}
+.topbar-inner{display:flex;align-items:center;gap:12px;padding:14px 20px;max-width:1100px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.3px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all 0.2s;flex-shrink:0}
+.icon-btn:hover{background:var(--glass-hover);color:var(--text)}
+.add-btn{display:flex;align-items:center;gap:6px;padding:0 16px;height:36px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:500;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;transition:opacity 0.2s,transform 0.15s;font-family:inherit}
+.add-btn:hover{opacity:0.9;transform:translateY(-1px)}
+.add-btn:active{transform:scale(0.97)}
+
+.search-wrap{padding:20px 0 0}
+.search-box{position:relative;display:flex;align-items:center}
+.search-icon{position:absolute;left:14px;color:var(--text3);font-size:15px;pointer-events:none}
+.search-input{width:100%;padding:11px 14px 11px 40px;background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:inherit;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color 0.2s,background 0.2s;outline:none}
+.search-input::placeholder{color:var(--text3)}
+.search-input:focus{border-color:var(--accent);background:var(--glass-hover)}
+
+.stats-row{display:flex;gap:10px;padding:16px 0 0;flex-wrap:wrap}
+.stat-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1px solid var(--glass-border);background:var(--glass);font-size:13px;color:var(--text2)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--green)}
+.dot-amber{background:var(--amber)}
+.dot-gray{background:var(--text3)}
+.stat-num{font-weight:600;color:var(--text)}
+
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:24px 0 14px}
+.section-title{font-size:15px;font-weight:600;color:var(--text)}
+.refresh-all-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1px solid var(--glass-border);background:var(--glass);color:var(--text2);font-size:12px;cursor:pointer;font-family:inherit;transition:all 0.2s}
+.refresh-all-btn:hover{background:var(--glass-hover);color:var(--text)}
+
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;padding-bottom:60px}
+
+.app-card{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px;transition:border-color 0.2s,background 0.2s,transform 0.2s;position:relative;overflow:hidden}
+.app-card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent-glow),transparent 60%);opacity:0;transition:opacity 0.3s;pointer-events:none}
+.app-card:hover{border-color:rgba(124,111,247,0.25);background:var(--glass-hover);transform:translateY(-2px)}
+.app-card:hover::before{opacity:1}
+.app-card.has-update{border-color:rgba(52,211,153,0.2)}
+.app-card.has-update::before{background:linear-gradient(135deg,rgba(52,211,153,0.07),transparent 60%);opacity:1}
+
+.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.app-icon{width:48px;height:48px;border-radius:12px;flex-shrink:0;background:var(--bg3);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden}
+.app-icon img{width:100%;height:100%;object-fit:cover;border-radius:11px}
+.app-info{flex:1;min-width:0}
+.app-name{font-size:15px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-repo{font-size:12px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-actions{display:flex;gap:5px;flex-shrink:0}
+.card-icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--glass-border);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all 0.2s}
+.card-icon-btn:hover{background:var(--glass-hover);color:var(--text)}
+.card-icon-btn.danger:hover{background:var(--red-bg);color:var(--red);border-color:rgba(248,113,113,0.3)}
+
+.version-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+.version-badges{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.badge{padding:3px 8px;border-radius:6px;font-size:11px;font-weight:500}
+.badge-latest{background:var(--glass);color:var(--text2);border:1px solid var(--glass-border)}
+.badge-update{background:var(--amber-bg);color:var(--amber)}
+.badge-installed{background:var(--green-bg);color:var(--green)}
+.badge-prerelease{background:var(--red-bg);color:var(--red)}
+.badge-source{background:var(--blue-bg);color:var(--blue);font-size:10px}
+.version-date{font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0}
+
+.changelog-preview{font-size:12px;color:var(--text2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:14px;min-height:34px}
+
+.installed-row{background:var(--bg3);border-radius:10px;padding:9px 12px;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.installed-label{font-size:12px;color:var(--text2);flex:1}
+.installed-input{background:var(--glass);border:1px solid var(--glass-border);border-radius:6px;padding:4px 8px;color:var(--text);font-size:12px;font-family:inherit;width:90px;outline:none;text-align:center}
+.installed-input:focus{border-color:var(--accent)}
+.mark-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--glass-border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;font-family:inherit;transition:all 0.2s;white-space:nowrap}
+.mark-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.download-section{display:flex;flex-direction:column;gap:8px}
+.apk-row{display:flex;gap:8px;align-items:center}
+.apk-select{flex:1;background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:12px;font-family:inherit;outline:none;cursor:pointer;min-width:0}
+.apk-select:focus{border-color:var(--accent)}
+.dl-btn{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:inherit;transition:opacity 0.2s,transform 0.15s;white-space:nowrap;text-decoration:none}
+.dl-btn:hover{opacity:0.9;transform:translateY(-1px)}
+.dl-btn:active{transform:scale(0.97)}
+.no-apk{font-size:12px;color:var(--text3)}
+.no-apk a{color:var(--accent)}
+
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border:1px solid var(--glass-border);border-radius:20px;padding:24px;max-width:560px;width:100%;max-height:80vh;overflow-y:auto;transform:translateY(10px);transition:transform 0.2s;box-shadow:var(--shadow)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.modal-title{font-size:16px;font-weight:600}
+.modal-close{width:32px;height:32px;border-radius:8px;border:1px solid var(--glass-border);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all 0.2s}
+.modal-close:hover{background:var(--glass-hover);color:var(--text)}
+
+.form-group{margin-bottom:14px}
+.form-label{font-size:13px;color:var(--text2);margin-bottom:5px;display:block}
+.form-input{width:100%;padding:10px 12px;background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--accent)}
+.form-hint{font-size:11px;color:var(--text3);margin-top:4px}
+.form-error{font-size:13px;color:var(--red);background:var(--red-bg);padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none}
+.form-submit{width:100%;padding:11px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:14px;font-weight:500;font-family:inherit;transition:opacity 0.2s}
+.form-submit:hover{opacity:0.9}
+.form-submit:disabled{opacity:0.5;cursor:not-allowed}
+
+.release-item{margin-bottom:20px}
+.release-ver{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.release-date{font-size:11px;color:var(--text3);font-weight:400}
+.release-link{color:var(--accent);font-size:11px;margin-left:auto}
+.release-body{font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.release-hr{border:none;border-top:1px solid var(--glass-border);margin:16px 0}
+
+.settings-group{margin-bottom:20px}
+.settings-group-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--glass-border)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-label{font-size:14px;color:var(--text)}
+.settings-ctrl{background:var(--glass);border:1px solid var(--glass-border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px;font-family:inherit;outline:none;cursor:pointer}
+.settings-ctrl:focus{border-color:var(--accent)}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3);grid-column:1/-1}
+.empty-icon{font-size:44px;margin-bottom:12px}
+.empty-title{font-size:16px;font-weight:500;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;line-height:1.6}
+
+.skel-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);height:240px;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.35}50%{opacity:0.6}}
+
+.toast-wrap{position:fixed;bottom:20px;right:20px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-border);box-shadow:var(--shadow);transform:translateX(120%);transition:transform 0.3s;max-width:280px}
+.toast.show{transform:translateX(0)}
+.toast.success{background:var(--green-bg);color:var(--green);border-color:rgba(52,211,153,0.3)}
+.toast.error{background:var(--red-bg);color:var(--red);border-color:rgba(248,113,113,0.3)}
+.toast.info{background:var(--blue-bg);color:var(--blue);border-color:rgba(96,165,250,0.3)}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinning{animation:spin 0.7s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="blobs">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">📦</div>
+      <span class="logo-text">APK Watch</span>
+    </a>
+    <div class="topbar-right">
+      <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
+      <button class="icon-btn" id="settingsBtn" title="Settings">⚙️</button>
+      <button class="add-btn" id="addBtn">+ Add app</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search apps…"/>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-pill"><span class="dot dot-gray"></span><span class="stat-num" id="cTotal">0</span>&nbsp;tracked</div>
+    <div class="stat-pill"><span class="dot dot-green"></span><span class="stat-num" id="cUpToDate">0</span>&nbsp;up to date</div>
+    <div class="stat-pill"><span class="dot dot-amber"></span><span class="stat-num" id="cUpdates">0</span>&nbsp;updates</div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-title" id="sectionTitle">All apps</span>
+    <button class="refresh-all-btn" id="refreshAllBtn"><span id="refreshIcon">↻</span>&nbsp;Refresh all</button>
+  </div>
+
+  <div class="app-grid" id="appGrid">
+    <div class="skel-card"></div>
+    <div class="skel-card"></div>
+    <div class="skel-card"></div>
+  </div>
+</div>
+
+<!-- Add app modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add app</span>
+      <button class="modal-close" id="closeAdd">✕</button>
+    </div>
+    <div id="addError" class="form-error"></div>
+    <div class="form-group">
+      <label class="form-label">Repository URL</label>
+      <input class="form-input" id="addUrl" type="url" placeholder="https://github.com/owner/repo"/>
+      <div class="form-hint">GitHub, GitLab, and Codeberg supported</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">App name <span style="color:var(--text3)">(optional)</span></label>
+      <input class="form-input" id="addName" type="text" placeholder="e.g. Signal"/>
+    </div>
+    <button class="form-submit" id="addSubmit">Add app</button>
+  </div>
+</div>
+
+<!-- Changelog modal -->
+<div class="modal-overlay" id="changelogModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="changelogTitle">Changelog</span>
+      <button class="modal-close" id="closeChangelog">✕</button>
+    </div>
+    <div id="changelogBody"></div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Settings</span>
+      <button class="modal-close" id="closeSettings">✕</button>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Device</div>
+      <div class="settings-row">
+        <span class="settings-row-label">Architecture</span>
+        <select class="settings-ctrl" id="archSelect">
+          <option value="arm64-v8a">arm64-v8a (most phones)</option>
+          <option value="armeabi-v7a">armeabi-v7a (older)</option>
+          <option value="x86_64">x86_64</option>
+          <option value="x86">x86</option>
+          <option value="universal">universal</option>
+        </select>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-label">Worker</div>
+      <div class="settings-row">
+        <span class="settings-row-label">API URL</span>
+        <input class="settings-ctrl" id="apiUrlInput" type="text" style="width:210px" placeholder="https://…workers.dev"/>
+      </div>
+    </div>
+    <button class="form-submit" id="saveSettings" style="margin-top:8px">Save settings</button>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const WORKER_KEY  = 'apkwatch_worker';
+const ARCH_KEY    = 'apkwatch_arch';
+const INST_KEY    = 'apkwatch_installed';
+const THEME_KEY   = 'apkwatch_theme';
+
+let workerUrl = localStorage.getItem(WORKER_KEY) || 'https://apk-watch.shariqahmad129.workers.dev';
+let arch      = localStorage.getItem(ARCH_KEY)   || 'arm64-v8a';
+let installed = JSON.parse(localStorage.getItem(INST_KEY) || '{}');
+let theme     = localStorage.getItem(THEME_KEY)  || 'dark';
+let allApps   = [];
+
+document.documentElement.setAttribute('data-theme', theme);
+document.getElementById('themeBtn').textContent = theme === 'dark' ? '🌙' : '☀️';
+
+// ─── API ──────────────────────────────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const res  = await fetch(workerUrl + path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ─── APK picker ───────────────────────────────────────────────────────────────
+const ARCH_KW = {
+  'arm64-v8a':   ['arm64','aarch64'],
+  'armeabi-v7a': ['armeabi','arm-v7','armv7'],
+  'x86_64':      ['x86_64','x64'],
+  'x86':         ['x86'],
+  'universal':   ['universal','-all'],
+};
+
+function pickApk(apks) {
+  if (!apks || !apks.length) return null;
+  if (apks.length === 1) return apks[0];
+  const kws = ARCH_KW[arch] || [];
+  const hit = apks.find(a => kws.some(k => a.name.toLowerCase().includes(k)));
+  if (hit) return hit;
+  return apks.find(a => ['universal','all'].some(k => a.name.toLowerCase().includes(k))) || apks[0];
+}
+
+function fmtBytes(b) {
+  if (!b) return '';
+  return b > 1e6 ? (b/1e6).toFixed(1)+' MB' : (b/1e3).toFixed(0)+' KB';
+}
+
+function timeAgo(s) {
+  if (!s) return '';
+  const d = (Date.now() - new Date(s)) / 1000;
+  if (d < 60)    return 'just now';
+  if (d < 3600)  return Math.floor(d/60)+'m ago';
+  if (d < 86400) return Math.floor(d/3600)+'h ago';
+  if (d < 2592000) return Math.floor(d/86400)+'d ago';
+  return new Date(s).toLocaleDateString('en',{month:'short',day:'numeric'});
+}
+
+function hasUpdate(app) {
+  const inst = installed[app.id];
+  return inst && app.latest && inst !== app.latest.version;
+}
+
+// ─── Render card ──────────────────────────────────────────────────────────────
+function renderCard(app) {
+  if (app.error) return `
+    <div class="app-card">
+      <div class="card-top">
+        <div class="app-icon">❌</div>
+        <div class="app-info">
+          <div class="app-name">${esc(app.name)}</div>
+          <div class="app-repo">${esc(app.owner)}/${esc(app.repo)}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--red)">${esc(app.error)}</div>
+    </div>`;
+
+  const lat    = app.latest;
+  const apks   = lat?.apks || [];
+  const best   = pickApk(apks);
+  const instV  = installed[app.id] || '';
+  const upd    = instV && lat && instV !== lat.version;
+  const icon   = app.meta?.iconUrl
+    ? `<img src="${app.meta.iconUrl}" alt="" onerror="this.style.display='none';this.parentNode.textContent='📦'"/>`
+    : '📦';
+
+  const opts   = apks.map(a =>
+    `<option value="${esc(a.downloadUrl)}" ${best?.name===a.name?'selected':''}>${esc(a.name)}${a.size?' ('+fmtBytes(a.size)+')':''}</option>`
+  ).join('');
+
+  const dlSection = apks.length
+    ? `<div class="apk-row">
+        <select class="apk-select" id="sel-${esc(app.id)}">${opts}</select>
+        <a class="dl-btn" id="dl-${esc(app.id)}" href="${esc(best?.downloadUrl||'#')}" target="_blank" download>↓ APK</a>
+       </div>`
+    : `<div class="no-apk">No APK attached — <a href="${esc(lat?.releaseUrl||app.url)}" target="_blank">view release ↗</a></div>`;
+
+  return `
+  <div class="app-card${upd?' has-update':''}" data-id="${esc(app.id)}">
+    <div class="card-top">
+      <div class="app-icon">${icon}</div>
+      <div class="app-info">
+        <div class="app-name">${esc(app.name)}</div>
+        <div class="app-repo">${esc(app.owner)}/${esc(app.repo)}</div>
+      </div>
+      <div class="card-actions">
+        <button class="card-icon-btn" onclick="openChangelog('${esc(app.id)}')" title="Changelog">📋</button>
+        <button class="card-icon-btn" id="rbtn-${esc(app.id)}" onclick="refreshOne('${esc(app.id)}')" title="Refresh">↻</button>
+        <button class="card-icon-btn danger" onclick="deleteApp('${esc(app.id)}')" title="Remove">🗑</button>
+      </div>
+    </div>
+
+    <div class="version-row">
+      <div class="version-badges">
+        <span class="badge badge-latest">${esc(lat?.version||'unknown')}</span>
+        ${upd ? '<span class="badge badge-update">update!</span>' : ''}
+        ${instV && !upd ? '<span class="badge badge-installed">✓ installed</span>' : ''}
+        ${lat?.prerelease ? '<span class="badge badge-prerelease">pre</span>' : ''}
+        <span class="badge badge-source">${esc(app.source)}</span>
+      </div>
+      <span class="version-date">${timeAgo(lat?.publishedAt)}</span>
+    </div>
+
+    <div class="changelog-preview">${esc((lat?.changelog||'No changelog.').slice(0,130).replace(/[#*`]/g,''))}${(lat?.changelog||'').length>130?'…':''}</div>
+
+    <div class="installed-row">
+      <span class="installed-label">Installed version</span>
+      <input class="installed-input" id="inst-${esc(app.id)}" value="${esc(instV)}" placeholder="none"/>
+      <button class="mark-btn" onclick="markInstalled('${esc(app.id)}')">Save</button>
+    </div>
+
+    <div class="download-section">${dlSection}</div>
+  </div>`;
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// sync select → download link
+document.addEventListener('change', e => {
+  if (!e.target.classList.contains('apk-select')) return;
+  const id = e.target.id.replace('sel-','');
+  const dl = document.getElementById('dl-'+id);
+  if (dl) dl.href = e.target.value;
+});
+
+// ─── Mark installed ───────────────────────────────────────────────────────────
+function markInstalled(id) {
+  const v = document.getElementById('inst-'+id)?.value?.trim();
+  if (v) installed[id] = v; else delete installed[id];
+  localStorage.setItem(INST_KEY, JSON.stringify(installed));
+  renderApps(allApps);
+  toast('Saved!','success');
+}
+
+// ─── Load & render ────────────────────────────────────────────────────────────
+async function loadApps() {
+  try {
+    allApps = await api('/apps');
+    renderApps(allApps);
+  } catch(e) {
+    document.getElementById('appGrid').innerHTML =
+      `<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Can't reach worker</div><div class="empty-sub">${esc(e.message)}<br/>Check API URL in settings.</div></div>`;
+  }
+}
+
+function renderApps(apps) {
+  const q        = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = q ? apps.filter(a =>
+    a.name.toLowerCase().includes(q) ||
+    (a.owner+'/'+a.repo).toLowerCase().includes(q)
+  ) : apps;
+
+  document.getElementById('cTotal').textContent    = apps.length;
+  document.getElementById('cUpdates').textContent  = apps.filter(hasUpdate).length;
+  document.getElementById('cUpToDate').textContent = apps.filter(a => installed[a.id] && !hasUpdate(a)).length;
+  document.getElementById('sectionTitle').textContent = q ? `${filtered.length} result${filtered.length!==1?'s':''}` : 'All apps';
+
+  const grid = document.getElementById('appGrid');
+  if (!filtered.length) {
+    grid.innerHTML = !apps.length
+      ? `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No apps tracked yet</div><div class="empty-sub">Hit "Add app" to start tracking open source apps.</div></div>`
+      : `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results for "${esc(q)}"</div></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(renderCard).join('');
+}
+
+// ─── Search ───────────────────────────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', () => renderApps(allApps));
+
+// ─── Add app ──────────────────────────────────────────────────────────────────
+document.getElementById('addBtn').onclick   = () => openModal('addModal');
+document.getElementById('closeAdd').onclick = () => closeModal('addModal');
+
+document.getElementById('addSubmit').onclick = async () => {
+  const url    = document.getElementById('addUrl').value.trim();
+  const name   = document.getElementById('addName').value.trim();
+  const errEl  = document.getElementById('addError');
+  const btn    = document.getElementById('addSubmit');
+  errEl.style.display = 'none';
+  if (!url) { errEl.textContent='URL is required'; errEl.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Adding…';
+  try {
+    const app = await api('/apps', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url,name}) });
+    allApps.push(app);
+    renderApps(allApps);
+    closeModal('addModal');
+    document.getElementById('addUrl').value = '';
+    document.getElementById('addName').value = '';
+    toast('App added!','success');
+  } catch(e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add app';
+  }
+};
+
+// ─── Delete ───────────────────────────────────────────────────────────────────
+async function deleteApp(id) {
+  if (!confirm('Remove this app from tracking?')) return;
+  try {
+    await api('/apps/'+encodeURIComponent(id), {method:'DELETE'});
+    allApps = allApps.filter(a => a.id !== id);
+    renderApps(allApps);
+    toast('Removed','info');
+  } catch(e) { toast(e.message,'error'); }
+}
+
+// ─── Refresh one ──────────────────────────────────────────────────────────────
+async function refreshOne(id) {
+  const btn = document.getElementById('rbtn-'+id);
+  if (btn) btn.classList.add('spinning');
+  try {
+    const fresh = await api('/apps/'+encodeURIComponent(id)+'/refresh', {method:'POST'});
+    allApps = allApps.map(a => a.id===id ? fresh : a);
+    renderApps(allApps);
+    toast('Refreshed!','success');
+  } catch(e) { toast(e.message,'error'); }
+  finally { if (btn) btn.classList.remove('spinning'); }
+}
+
+// ─── Refresh all ──────────────────────────────────────────────────────────────
+document.getElementById('refreshAllBtn').onclick = async () => {
+  const icon = document.getElementById('refreshIcon');
+  icon.classList.add('spinning');
+  try {
+    await Promise.all(allApps.map(a => api('/apps/'+encodeURIComponent(a.id)+'/refresh',{method:'POST'})));
+    await loadApps();
+    toast('All refreshed!','success');
+  } catch(e) { toast(e.message,'error'); }
+  finally { icon.classList.remove('spinning'); }
+};
+
+// ─── Changelog ────────────────────────────────────────────────────────────────
+async function openChangelog(id) {
+  const app = allApps.find(a => a.id===id);
+  document.getElementById('changelogTitle').textContent = (app?.name||id)+' — releases';
+  document.getElementById('changelogBody').innerHTML = '<div style="color:var(--text3);font-size:13px">Loading…</div>';
+  openModal('changelogModal');
+  try {
+    const releases = await api('/apps/'+encodeURIComponent(id));
+    document.getElementById('changelogBody').innerHTML = releases.map((r,i) => `
+      <div class="release-item">
+        <div class="release-ver">
+          ${esc(r.version)}
+          ${r.prerelease?'<span class="badge badge-prerelease">pre</span>':''}
+          <span class="release-date">${timeAgo(r.publishedAt)}</span>
+          ${r.releaseUrl?`<a class="release-link" href="${esc(r.releaseUrl)}" target="_blank">↗ view</a>`:''}
+        </div>
+        <div class="release-body">${esc((r.changelog||'No notes.').slice(0,800))}</div>
+      </div>
+      ${i<releases.length-1?'<hr class="release-hr"/>':''}
+    `).join('');
+  } catch(e) {
+    document.getElementById('changelogBody').innerHTML = `<div style="color:var(--red);font-size:13px">${esc(e.message)}</div>`;
+  }
+}
+document.getElementById('closeChangelog').onclick = () => closeModal('changelogModal');
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
+document.getElementById('settingsBtn').onclick = () => {
+  document.getElementById('archSelect').value = arch;
+  document.getElementById('apiUrlInput').value = workerUrl;
+  openModal('settingsModal');
+};
+document.getElementById('closeSettings').onclick = () => closeModal('settingsModal');
+document.getElementById('saveSettings').onclick  = () => {
+  arch      = document.getElementById('archSelect').value;
+  workerUrl = document.getElementById('apiUrlInput').value.trim() || workerUrl;
+  localStorage.setItem(ARCH_KEY, arch);
+  localStorage.setItem(WORKER_KEY, workerUrl);
+  closeModal('settingsModal');
+  renderApps(allApps);
+  toast('Settings saved','success');
+};
+
+// ─── Theme ────────────────────────────────────────────────────────────────────
+document.getElementById('themeBtn').onclick = () => {
+  theme = theme==='dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').textContent = theme==='dark' ? '🌙' : '☀️';
+  localStorage.setItem(THEME_KEY, theme);
+};
+
+// ─── Modals ───────────────────────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el =>
+  el.addEventListener('click', e => { if (e.target===el) closeModal(el.id); })
+);
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') document.querySelectorAll('.modal-overlay.open').forEach(el => closeModal(el.id));
+});
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toastWrap').appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 2500);
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+loadApps();
+</script>
+</body>
+</html>
